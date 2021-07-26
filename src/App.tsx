@@ -14,6 +14,7 @@ function App() {
   const [row, setRow] = useState(5);
 
   const [state, setState] = useState([[0]]);
+  const [table, setTable] = useState((<div></div>));
 
   useEffect(() => {
     var actualState = state;
@@ -39,13 +40,29 @@ function App() {
     }
 
     setState(actualState);
-  }, [column, row]);
+  }, [column, row, state]);
 
-  const renderTable = function(){
-    return (
-      <div>work in progress</div>
-    );
-  }
+  useEffect(() => {
+    const renderTable = function(){
+      return (
+        <tbody>
+          {
+            state.map((row, index) => renderRow(row, index))
+          }
+        </tbody>
+      );
+    }
+  
+    function renderRow(row: number[], rowNumber: number) {
+      return (
+        <tr>
+          {row.map((cell: number, columnNumber: number) => (<td className={`AltCell${cell === 1 ? " alive" : ""}`} id={`cell${rowNumber}${columnNumber}`}></td>))}
+        </tr>
+      );
+    }  
+
+    setTable(renderTable());
+  }, [column, row, state]);
 
   return (
     <div className="App">
@@ -63,9 +80,7 @@ function App() {
         </Row>
       </Form>
       <Table striped bordered hover>
-        <tbody>
-          {renderTable()}
-        </tbody>
+          {table}
       </Table>
     </div>
   );
