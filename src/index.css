@@ -12,7 +12,11 @@ code {
     monospace;
 }
 
-.AltCell:hover {
+.AltCell.alive {
+  background-color: green;
+}
+
+.internalCell:hover {
   background: repeating-linear-gradient(45deg, #AAAAAA, #AAAAAA 10px, #888888 10px, #888888 20px );
   opacity: 0.5;
   z-index: 1;

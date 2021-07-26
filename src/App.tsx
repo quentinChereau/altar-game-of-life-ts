@@ -13,7 +13,7 @@ function App() {
   const [column, setColumn] = useState(5);
   const [row, setRow] = useState(5);
 
-  const [state, setState] = useState([[0]]);
+  const [state, setState] = useState([[false]]);
   const [table, setTable] = useState((<div></div>));
 
   useEffect(() => {
@@ -31,7 +31,7 @@ function App() {
     for(var i =0; i < row; i++){
       var consideredRow = actualState[i];
       while(consideredRow.length < column){
-        consideredRow.push(0);
+        consideredRow.push(false);
       }
 
       while(consideredRow.length > column){
@@ -53,12 +53,25 @@ function App() {
       );
     }
   
-    function renderRow(row: number[], rowNumber: number) {
+    function changeState(rowNumber: number, columnNumber: number) {
+      //cloning to force refresh
+      var newState:boolean[][] = [];
+      state.forEach( row => newState.push(Object.assign([], row)))
+      newState[rowNumber][columnNumber] = !newState[rowNumber][columnNumber];
+      console.log(`newState ${newState}`)
+      setState(newState);
+    }
+
+    function renderRow(row: boolean[], rowNumber: number) {
+      console.log(`state ${state}`);
       return (
         <tr>
-          {row.map((cell: number, columnNumber: number) => (
-            <td className="AltCell" id={`cell${rowNumber}${columnNumber}`}>
-              <div className={`internalCell ${cell === 1 ? " alive" : ""}`}/>
+          {row.map((cell: boolean, columnNumber: number) => (
+            <td className={`AltCell ${cell ? " alive" : ""}`} id={`cell${rowNumber}${columnNumber}`} onClick={() => {
+              console.log("ici "+rowNumber+columnNumber);
+              changeState(rowNumber, columnNumber);}
+            }>
+              <div className="internalCell"/>
             </td>))}
         </tr>
       );
