@@ -2,13 +2,12 @@ import React from 'react';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import Row from 'react-bootstrap/Row';
-import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
+import Form from 'react-bootstrap/Form';
+import Row from 'react-bootstrap/Row';
 import Table from 'react-bootstrap/Table';
-import { useState } from 'react';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 function App() {
   const [column, setColumn] = useState(50);
@@ -19,29 +18,7 @@ function App() {
   const [running, setRunning] = useState(false);
 
   useEffect(() => {
-    var actualState = state;
-
-    //adapting row number
-    while(actualState.length < row) {
-      actualState.push([]);
-    }
-
-    while(actualState.length > row) {
-      actualState.splice(-1,1);
-    }
-
-    for(var i =0; i < row; i++){
-      var consideredRow = actualState[i];
-      while(consideredRow.length < column){
-        consideredRow.push(false);
-      }
-
-      while(consideredRow.length > column){
-        consideredRow.splice(-1,1);
-      }
-    }
-
-    setState(actualState);
+    generateGridBasedOnSize();
   }, [column, row, state]);
 
   useEffect(() => {
@@ -53,13 +30,6 @@ function App() {
           }
         </tbody>
       );
-    }
-  
-    function changeState(rowNumber: number, columnNumber: number) {
-      //cloning to force refresh
-      var newState: boolean[][] = cloneState();
-      newState[rowNumber][columnNumber] = !newState[rowNumber][columnNumber];
-      setState(newState);
     }
 
     function renderRow(row: boolean[], rowNumber: number) {
@@ -75,12 +45,18 @@ function App() {
       );
     }  
 
+    function changeState(rowNumber: number, columnNumber: number) {
+      //cloning to force refresh
+      var newState: boolean[][] = cloneState();
+      newState[rowNumber][columnNumber] = !newState[rowNumber][columnNumber];
+      setState(newState);
+    }
+
     setTable(renderTable());
   }, [column, row, state]);
 
   const aGameOfLifeRound = function(){
-    var newState = [[false]];
-    newState = cloneState();
+    var newState = cloneState();
 
     newState.forEach((row, rowIndex) => {
       row.forEach((cell, cellIndex) => {
@@ -99,12 +75,17 @@ function App() {
   const MOVEMENT = [-1, 0, 1];
   const countNeighbor = function(rowIndex: number, columnIndex: number){
     return MOVEMENT.reduce((sum, horizontalMovement) => {
-      return sum += MOVEMENT.filter((verticalMovement) => {
-        if(horizontalMovement === 0 && verticalMovement === 0) return false;
-        if(rowIndex + verticalMovement < 0 || rowIndex+verticalMovement >= row) return false;
-        if(columnIndex + horizontalMovement < 0 || columnIndex + horizontalMovement >= column) return false;
+      const isCellValide = (verticalMovement: number): boolean => {
+        if (horizontalMovement === 0 && verticalMovement === 0)
+          return false;
+        if (rowIndex + verticalMovement < 0 || rowIndex + verticalMovement >= row)
+          return false;
+        if (columnIndex + horizontalMovement < 0 || columnIndex + horizontalMovement >= column)
+          return false;
         return true;
-      }).reduce((currentSum, verticalMovement) => {
+      };
+      return sum += MOVEMENT.filter(isCellValide)
+      .reduce((currentSum, verticalMovement) => {
         return currentSum + (state[rowIndex + verticalMovement][columnIndex + horizontalMovement] ? 1 : 0);
       }, 0)
     }, 0);
@@ -144,6 +125,31 @@ function App() {
       </Table>
     </div>
   );
+
+  function generateGridBasedOnSize() {
+    var actualState = state;
+
+    while (actualState.length < row) {
+      actualState.push([]);
+    }
+
+    while (actualState.length > row) {
+      actualState.splice(-1, 1);
+    }
+
+    for (var i = 0; i < row; i++) {
+      var consideredRow = actualState[i];
+      while (consideredRow.length < column) {
+        consideredRow.push(false);
+      }
+
+      while (consideredRow.length > column) {
+        consideredRow.splice(-1, 1);
+      }
+    }
+
+    setState(actualState);
+  }
 
   function cloneState() {
     var newState: boolean[][] = [];
