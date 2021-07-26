@@ -56,7 +56,10 @@ function App() {
     function renderRow(row: number[], rowNumber: number) {
       return (
         <tr>
-          {row.map((cell: number, columnNumber: number) => (<td className={`AltCell${cell === 1 ? " alive" : ""}`} id={`cell${rowNumber}${columnNumber}`}></td>))}
+          {row.map((cell: number, columnNumber: number) => (
+            <td className="AltCell" id={`cell${rowNumber}${columnNumber}`}>
+              <div className={`internalCell ${cell === 1 ? " alive" : ""}`}/>
+            </td>))}
         </tr>
       );
     }  
@@ -69,17 +72,17 @@ function App() {
       <Form className="bg-secondary p-3">
         <Row>
           <Col xs={5}>
-            <Form.Control placeholder="Number of column" value={column} onChange={(event) => {setColumn(parseInt(event.target.value)); return true;}} type="int"/>
+            <Form.Control placeholder="Number of column" value={column} onChange={(event) => {setColumn(parseInt(event.target.value) || 0); return true;}} type="int"/>
           </Col>
           <Col xs={5}>
-            <Form.Control placeholder="Number of row" value={row} onChange={(event) => {setRow(parseInt(event.target.value)); return true;}} type="int"/>
+            <Form.Control placeholder="Number of row" value={row} onChange={(event) => {setRow(parseInt(event.target.value) || 0); return true;}} type="int"/>
           </Col>
           <Col>
             <Form.Control placeholder="Zip" />
           </Col>
         </Row>
       </Form>
-      <Table striped bordered hover>
+      <Table striped bordered>
           {table}
       </Table>
     </div>
